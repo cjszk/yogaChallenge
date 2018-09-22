@@ -9,24 +9,79 @@ class SearchResults extends Component {
         }
     }
 
+
   render() {
     console.log(this.props)
     let filterResults = [];
-    this.props.filters.forEach((filterItem) => {
-        this.props.classes.forEach((classItem) => {
-            if (filterItem.type === 'teacher' && filterItem.data === classItem.teacher[0]) {
-                filterResults.push(classItem);
-            } else if (filterItem.type === 'duration' && filterItem.data === classItem.duration[0]) {
-                filterResults.push(classItem);                    
-            } else if (filterItem.type === 'level' && filterItem.data === classItem.level[0]) {
-                filterResults.push(classItem);                    
-            } else if (filterItem.type === 'style' && filterItem.data === classItem.style[0]) {
-                filterResults.push(classItem);                    
-            } else if (filterItem.type === 'bodyPart' && filterItem.data === classItem.anatomical_focus[0]) {
-                filterResults.push(classItem);                    
+//     this.props.filters.map((filterItem) => {
+//         this.props.classes.forEach((classItem) => {
+//             if (filterItem.type === 'teacher' && filterItem.data === classItem.teacher[0]) {
+//                 filterResults.push(classItem);
+//             }
+//         })
+// //Prevent the following if blocks from running until the current map function has finished by using another forEach after a map method that returns all values.
+//         return filterItem;
+//     }).forEach((filterItem) => {
+//         this.props.classes.forEach((classItem) => {
+//             if (filterResults.length > 0) {
+//                 // console.log(filterResults.indexOf(classItem.teacher[0]), classItem.teacher[0], filterResults[0])
+//                 console.log
+//                 if (filterResults.indexOf(classItem.teacher[0]) > -1) {
+//                     if (filterItem.type === 'duration' && filterItem.data === classItem.duration[0]) {
+//                         filterResults.push(classItem);                    
+//                     } else if (filterItem.type === 'level' && filterItem.data === classItem.level[0]) {
+//                         filterResults.push(classItem);                    
+//                     } else if (filterItem.type === 'style' && filterItem.data === classItem.style[0]) {
+//                         filterResults.push(classItem);                    
+//                     } else if (filterItem.type === 'bodyPart' && filterItem.data === classItem.anatomical_focus[0]) {
+//                         filterResults.push(classItem);                    
+//                     }
+//                 }
+//             }
+//         })
+    // })
+    const teachers = this.props.filters.map((item) => item.data);
+    const duration = this.props.filters.filter((item) => item.type === 'duration').map((item) => item.data);
+    const level = this.props.filters.filter((item) => item.type === 'level').map((item) => item.data);
+    const style = this.props.filters.filter((item) => item.type === 'style').map((item) => item.data);
+    const bodyPart = this.props.filters.filter((item) => item.type === 'bodyPart').map((item) => item.data);
+    filterResults = this.props.classes.filter((classItem) => {
+        if (teachers.includes(classItem.teacher[0])) {
+            return classItem;
+        }
+    })
+    if (filterResults.length === 0) {
+        filterResults = this.props.classes;
+    }
+    if (duration.length > 0) {
+        filterResults = filterResults.filter((classItem) => {
+            if (duration.includes(classItem.duration[0])) {
+                return classItem;
             }
         })
-    })
+    }
+    if (level.length > 0) {
+        filterResults = filterResults.filter((classItem) => {
+            if (level.includes(classItem.level[0])) {
+                return classItem;
+            }
+        })
+    }
+    if (style.length > 0) {
+        filterResults = filterResults.filter((classItem) => {
+            if (style.includes(classItem.style[0])) {
+                return classItem;
+            }
+        })
+    }
+    if (bodyPart.length > 0) {
+        filterResults = filterResults.filter((classItem) => {
+            if (bodyPart.includes(classItem.anatomical_focus[0])) {
+                return classItem;
+            }
+        })
+    }
+    
     let data = this.props.classes;
     if (filterResults.length > 0) {
         data = filterResults;
@@ -82,7 +137,7 @@ class SearchResults extends Component {
             </div>
             )
     } else if (this.props.search.length > 0) {
-        const searchResults = data.filter((item) => item.title.includes(this.props.search)).slice(0 + this.state.sliderIndex, 7 + this.state.sliderIndex).map((item) => (
+        let searchResults = data.filter((item) => item.title.includes(this.props.search)).map((item) => (
         <div key={item.entry_id} className="m-2">
             <div className="yi-card-small-centered-hover-wrapper slider">
                 <a className="yi-card-small yi-card-small--hoverable"
@@ -108,33 +163,21 @@ class SearchResults extends Component {
             this.setState({sliderIndex: 0})
         }
         const count = data.filter((item) => item.title.includes(this.props.search)).length;
+        if (count === 0) {
+            searchResults = (<span>No search results to display</span>)
+        }
         results = (
             <div>
                 <h4 className="slider-header">{count} results</h4>
                 <div className="slider">
                     <div className="slider-results">
-                        <button onClick={() => {
-                            if (this.state.sliderIndex !== 0) {
-                                this.setState({sliderIndex: this.state.sliderIndex - 7})
-                            }
-                        }} className="slider-button slider-button-left">
-                            &#60;
-                        </button>
                         {searchResults}
-                        <button onClick={() => {
-                            console.log(this.state.sliderIndex, count)
-                            if (this.state.sliderIndex < count && searchResults.length >= 7) {
-                                    this.setState({sliderIndex: this.state.sliderIndex + 7})
-                        }}}
-                        className="slider-button slider-button-right">
-                            &#62;
-                        </button>
                     </div>
                 </div>
             </div>
         )
     } else {
-        const searchResults = data.filter((item) => item.title.includes(this.props.search)).slice(0 + this.state.sliderIndex, 7 + this.state.sliderIndex).map((item) => (
+        let searchResults = data.filter((item) => item.title.includes(this.props.search)).map((item) => (
             <div key={item.entry_id} className="m-2">
                 <div className="yi-card-small-centered-hover-wrapper slider">
                     <a className="yi-card-small yi-card-small--hoverable"
@@ -157,27 +200,15 @@ class SearchResults extends Component {
             </div>
             ));
         const count = filterResults.length;
+        if (count === 0) {
+            searchResults = (<span>No search results to display</span>)
+        }
         results = (
             <div>
                 <h4 className="slider-header">{count} results</h4>
                 <div className="slider">
                     <div className="slider-results">
-                        <button onClick={() => {
-                            if (this.state.sliderIndex !== 0) {
-                                this.setState({sliderIndex: this.state.sliderIndex - 7})
-                            }
-                        }} className="slider-button slider-button-left">
-                            &#60;
-                        </button>
                         {searchResults}
-                        <button onClick={() => {
-                            console.log(this.state.sliderIndex, count)
-                            if (this.state.sliderIndex < count && searchResults.length >= 7) {
-                                    this.setState({sliderIndex: this.state.sliderIndex + 7})
-                        }}}
-                        className="slider-button slider-button-right">
-                            &#62;
-                        </button>
                     </div>
                 </div>
             </div>
