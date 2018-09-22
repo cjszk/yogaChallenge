@@ -18,11 +18,11 @@ const teachers = sampleData.map((item) => {
   index === self.findIndex((t) => (
     t.data === teacher.data
   ))
-).sort((a,b) => a.name.charCodeAt(0) - b.name.charCodeAt(0))
+).sort((a,b) => a.name.charCodeAt(0) - b.name.charCodeAt(0));
 function onlyUnique(value, index, self) { 
-    return self.indexOf(value) === index && value != undefined;
+    return self.indexOf(value) === index && value !== undefined;
 }
-const durations = sampleData.map((item) => item.duration[0]).filter(onlyUnique).sort((a,b) => parseInt(a.replace(/[^0-9]/g, '')) - parseInt(b.replace(/[^0-9]/g, '')));
+const durations = sampleData.map((item) => item.duration[0]).filter(onlyUnique).sort((a,b) => parseInt(a.replace(/[^0-9]/g, ''), 10) - parseInt(b.replace(/[^0-9]/g, ''), 10));
 const levels = sampleData.map((item) => item.level[0]).filter(onlyUnique).sort();
 const styles = sampleData.map((item) => item.style[0]).filter(onlyUnique).sort();
 const bodyParts = sampleData.map((item) => item.anatomical_focus[0]).filter(onlyUnique).sort();
@@ -48,18 +48,24 @@ class ClassFinder extends Component {
         }
     }
 
+    getDefaultToggleState() {
+        return {
+            toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
+            toggleDurations: 'dropdown-menu ygi-dropdown__menu',
+            toggleLevels: 'dropdown-menu ygi-dropdown__menu',
+            toggleStyles: 'dropdown-menu ygi-dropdown__menu',
+            toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
+        }
+    }
+
   render() {
+    console.log(this.getDefaultToggleState())
     const teachersList = this.state.teachers.map((teacher) => (
         <button 
         onClick={() => {
-            this.setState({
-                filters: this.state.filters.concat([{name: teacher.name, data: teacher.data, type: 'teacher', image: teacher.image}]),
-                toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-                toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-                toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-                toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-                toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-            })
+            let newToggleState = this.getDefaultToggleState();
+            newToggleState.filters = this.state.filters.concat([{name: teacher.name, data: teacher.data, type: 'teacher', image: teacher.image}])
+            this.setState(newToggleState)
         }} 
         key={teacher.data} className="dropdown-item ygi-dropdown__option">
             <img className="yi-teacher-dropdown__image--small" src={teacher.image} alt="Teacher" />
@@ -70,14 +76,9 @@ class ClassFinder extends Component {
     const durationList = this.state.durations.map((duration) => (
         <button 
         onClick={() => {
-            this.setState({
-                filters: this.state.filters.concat([{data: duration, type: 'duration'}]),
-                toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-                toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-                toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-                toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-                toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-        })
+            let newToggleState = this.getDefaultToggleState();
+            newToggleState.filters = this.state.filters.concat([{data: duration, type: 'duration'}]);
+            this.setState(newToggleState)
         }} 
         key={duration} className="dropdown-item ygi-dropdown__option">
             <span>{duration}</span>
@@ -87,14 +88,9 @@ class ClassFinder extends Component {
     const levelList = this.state.levels.map((level) => (
         <button
         onClick={() => {
-            this.setState({
-            filters: this.state.filters.concat([{data: level, type: 'level'}]),
-            toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-            toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-            toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-            toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-            toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-        })
+            let newToggleState = this.getDefaultToggleState();
+            newToggleState.filters = this.state.filters.concat([{data: level, type: 'level'}]);
+            this.setState(newToggleState);
         }} 
         key={level} className="dropdown-item ygi-dropdown__option">
             <span>{level}</span>
@@ -104,14 +100,9 @@ class ClassFinder extends Component {
     const styleList = this.state.styles.map((style) => (
         <button
         onClick={() => {
-            this.setState({
-                filters: this.state.filters.concat([{data: style, type: 'style'}]),
-                toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-                toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-                toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-                toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-                toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-            })
+            let newToggleState = this.getDefaultToggleState();
+            newToggleState.filters = this.state.filters.concat([{data: style, type: 'style'}]);
+            this.setState(newToggleState);
         }} 
         key={style} className="dropdown-item ygi-dropdown__option">
             <span>{style}</span>
@@ -121,14 +112,9 @@ class ClassFinder extends Component {
     const bodyPartList = this.state.bodyParts.map((bodyPart) => (
         <button
         onClick={() => {
-            this.setState({
-                filters: this.state.filters.concat([{data: bodyPart, type: 'bodyPart'}]),
-                toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-                toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-                toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-                toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-                toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-            })
+            let newToggleState = this.getDefaultToggleState();
+            newToggleState.filters = this.state.filters.concat([{data: bodyPart, type: 'bodyPart'}]);
+            this.setState(newToggleState);
         }} 
         key={bodyPart} className="dropdown-item ygi-dropdown__option">
             <span>{bodyPart}</span>
@@ -189,15 +175,11 @@ class ClassFinder extends Component {
                                         <button
                                         onClick={() => {
                                             if (this.state.toggleTeachers === 'dropdown-menu ygi-dropdown__menu'){
-                                                this.setState({
-                                                    toggleTeachers: 'dropdown-menu ygi-dropdown__menu show',
-                                                    toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-                                                });
+                                                let newToggleState = this.getDefaultToggleState();
+                                                newToggleState.toggleTeachers = 'dropdown-menu ygi-dropdown__menu show'
+                                                this.setState(newToggleState);
                                             } else {
-                                                this.setState({toggleTeachers: 'dropdown-menu ygi-dropdown__menu'});
+                                                this.setState(this.getDefaultToggleState());
                                             }
                                         }} 
                                         className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-teacher" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Teacher</button>
@@ -213,15 +195,11 @@ class ClassFinder extends Component {
                                         <button
                                         onClick={() => {
                                             if (this.state.toggleDurations === 'dropdown-menu ygi-dropdown__menu'){
-                                                this.setState({
-                                                    toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleDurations: 'dropdown-menu ygi-dropdown__menu show',
-                                                    toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-                                                });
+                                                let newToggleState = this.getDefaultToggleState();
+                                                newToggleState.toggleDurations = 'dropdown-menu ygi-dropdown__menu show'
+                                                this.setState(newToggleState);
                                             } else {
-                                                this.setState({toggleDurations: 'dropdown-menu ygi-dropdown__menu'});
+                                                this.setState(this.getDefaultToggleState());
                                             }
                                         }} 
                                         className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-duration" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Duration</button>
@@ -237,15 +215,11 @@ class ClassFinder extends Component {
                                         <button
                                         onClick={() => {
                                             if (this.state.toggleLevels === 'dropdown-menu ygi-dropdown__menu'){
-                                                this.setState({
-                                                    toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleLevels: 'dropdown-menu ygi-dropdown__menu show',
-                                                    toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-                                                });
+                                                let newToggleState = this.getDefaultToggleState();
+                                                newToggleState.toggleLevels = 'dropdown-menu ygi-dropdown__menu show'
+                                                this.setState(newToggleState);
                                             } else {
-                                                this.setState({toggleLevels: 'dropdown-menu ygi-dropdown__menu'});
+                                                this.setState(this.getDefaultToggleState());
                                             }
                                         }} 
                                         className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-level" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Level</button>
@@ -261,15 +235,11 @@ class ClassFinder extends Component {
                                         <button
                                         onClick={() => {
                                             if (this.state.toggleStyles === 'dropdown-menu ygi-dropdown__menu'){
-                                                this.setState({
-                                                    toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleStyles: 'dropdown-menu ygi-dropdown__menu show',
-                                                    toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
-                                                });
+                                                let newToggleState = this.getDefaultToggleState();
+                                                newToggleState.toggleStyles = 'dropdown-menu ygi-dropdown__menu show'
+                                                this.setState(newToggleState);
                                             } else {
-                                                this.setState({toggleStyles: 'dropdown-menu ygi-dropdown__menu'});
+                                                this.setState(this.getDefaultToggleState());
                                             }
                                         }} 
                                         className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-style" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Style</button>
@@ -285,15 +255,11 @@ class ClassFinder extends Component {
                                         <button
                                         onClick={() => {
                                             if (this.state.toggleBodyParts === 'dropdown-menu ygi-dropdown__menu'){
-                                                this.setState({
-                                                    toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleDurations: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleLevels: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleStyles: 'dropdown-menu ygi-dropdown__menu',
-                                                    toggleBodyParts: 'dropdown-menu ygi-dropdown__menu show'
-                                                });
+                                                let newToggleState = this.getDefaultToggleState();
+                                                newToggleState.toggleBodyParts = 'dropdown-menu ygi-dropdown__menu show'
+                                                this.setState(newToggleState);
                                             } else {
-                                                this.setState({toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'});
+                                                this.setState(this.getDefaultToggleState());
                                             }
                                         }} 
                                         className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-anatomical_focus" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Body Part</button>
