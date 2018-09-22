@@ -100,10 +100,10 @@ class SearchResults extends Component {
                             <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-show">{item.title}</h4>
                             <div className="yi-card-small__author yi-card-small--hover-hide">{item.teacher[0]}</div>
                             <div className="yi-card-small__author yi-card-small--hover-show yi-card-small__author--full">{item.teacher[0]}</div>
-                            <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
                             <div className="">{item.level}</div>
                             <i className="icon-intensity" style={{fontSize: "11px"}}></i>
                             <span className="yi-card-small__intensity">{item.intensity}</span>
+                            <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
                         </div>
                     </div>                
                 </a>
@@ -149,10 +149,10 @@ class SearchResults extends Component {
                             <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-show">{item.title}</h4>
                             <div className="yi-card-small__author yi-card-small--hover-hide">{item.teacher[0]}</div>
                             <div className="yi-card-small__author yi-card-small--hover-show yi-card-small__author--full">{item.teacher[0]}</div>
-                            <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
                             <div className="">{item.level}</div>
                             <i className="icon-intensity" style={{fontSize: "11px"}}></i>
                             <span className="yi-card-small__intensity">{item.intensity}</span>
+                            <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
                         </div>
                     </div>
                 </a>
@@ -189,10 +189,10 @@ class SearchResults extends Component {
                                 <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-show">{item.title}</h4>
                                 <div className="yi-card-small__author yi-card-small--hover-hide">{item.teacher[0]}</div>
                                 <div className="yi-card-small__author yi-card-small--hover-show yi-card-small__author--full">{item.teacher[0]}</div>
-                                <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
                                 <div className="">{item.level}</div>
                                 <i className="icon-intensity" style={{fontSize: "11px"}}></i>
                                 <span className="yi-card-small__intensity">{item.intensity}</span>
+                                <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
                             </div>
                         </div>
                     </a>
