@@ -4,9 +4,6 @@ import SearchResults from './searchResults';
 
 import sampleData from '../utils/sampleData.json';
 //I've only been given a single JSON with classes populating other values, thus I need to extract certain values from this single JSON for certain functionalities.
-function onlyUnique(value, index, self) { 
-    return self.indexOf(value) === index && value != undefined;
-}
 
 const teachers = sampleData.map((item) => {
     const teacherName = item.teacher[0].replace('-', ' ').replace('-', ' ').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' ');
@@ -22,7 +19,9 @@ const teachers = sampleData.map((item) => {
     t.data === teacher.data
   ))
 ).sort((a,b) => a.name.charCodeAt(0) - b.name.charCodeAt(0))
-
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index && value != undefined;
+}
 const durations = sampleData.map((item) => item.duration[0]).filter(onlyUnique).sort((a,b) => parseInt(a.replace(/[^0-9]/g, '')) - parseInt(b.replace(/[^0-9]/g, '')));
 const levels = sampleData.map((item) => item.level[0]).filter(onlyUnique).sort();
 const styles = sampleData.map((item) => item.style[0]).filter(onlyUnique).sort();
@@ -170,7 +169,7 @@ class ClassFinder extends Component {
 
     return (
         <div className="default-page-wrapper">
-            <div className="container px-3"><h2 className="ygi-page-heading ygi-page-heading--dark">Online 30 Minute Yoga Classes </h2></div>
+            <div className="container px-3"><h2 className="ygi-page-heading ygi-page-heading--dark">Online Yoga Classes </h2></div>
             <section className="ygi-search">
                 <div className="classFinder container px-3">
                     <div className="ygi-search__wrapper">

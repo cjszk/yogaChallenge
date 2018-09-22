@@ -14922,7 +14922,7 @@ button {
       -webkit-transition: inherit;
       transition: inherit; }
   .yi-card-small__content {
-    padding: 15px 0px; }
+    padding: 15px; }
   .yi-card-small__title {
     font-size: 1.25rem;
     font-weight: 500;
