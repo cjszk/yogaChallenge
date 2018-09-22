@@ -9,16 +9,21 @@ function onlyUnique(value, index, self) {
 }
 
 const teachers = sampleData.map((item) => {
+    const teacherName = item.teacher[0].replace('-', ' ').replace('-', ' ').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' ');
+    let teacherImage = item.teacher_image;
+    if (teacherImage.length === 0) {
+        teacherImage = "https://yogainternational.com/assets/fonts/icons/icon-profile-placeholder.svg";
+    }
     return {
-        name: item.teacher[0], image: item.teacher_image
+        name: teacherName, data: item.teacher[0], image: teacherImage
     }
 }).filter((teacher, index, self) =>
   index === self.findIndex((t) => (
-    t.name === teacher.name
+    t.data === teacher.data
   ))
-)
+).sort((a,b) => a.name.charCodeAt(0) - b.name.charCodeAt(0))
 
-const durations = sampleData.map((item) => item.duration[0]).filter(onlyUnique).sort();
+const durations = sampleData.map((item) => item.duration[0]).filter(onlyUnique).sort((a,b) => parseInt(a.replace(/[^0-9]/g, '')) - parseInt(b.replace(/[^0-9]/g, '')));
 const levels = sampleData.map((item) => item.level[0]).filter(onlyUnique).sort();
 const styles = sampleData.map((item) => item.style[0]).filter(onlyUnique).sort();
 const bodyParts = sampleData.map((item) => item.anatomical_focus[0]).filter(onlyUnique).sort();
@@ -49,7 +54,7 @@ class ClassFinder extends Component {
         <button 
         onClick={() => {
             this.setState({
-                filters: this.state.filters.concat([{data: teacher.name, type: 'teacher', image: teacher.image}]),
+                filters: this.state.filters.concat([{name: teacher.name, data: teacher.data, type: 'teacher', image: teacher.image}]),
                 toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
                 toggleDurations: 'dropdown-menu ygi-dropdown__menu',
                 toggleLevels: 'dropdown-menu ygi-dropdown__menu',
@@ -57,7 +62,7 @@ class ClassFinder extends Component {
                 toggleBodyParts: 'dropdown-menu ygi-dropdown__menu'
             })
         }} 
-        key={teacher.name} className="dropdown-item ygi-dropdown__option">
+        key={teacher.data} className="dropdown-item ygi-dropdown__option">
             <img className="yi-teacher-dropdown__image--small" src={teacher.image} alt="Teacher" />
             <span>{teacher.name}</span>
         </button>
@@ -143,7 +148,7 @@ class ClassFinder extends Component {
                         }} className="mt-2">
                         <div value={item.data} role="button" className="ygi-search-filters__filter">
                             <img value={item.data}  className="ygi-search-filters__filter-teacher-image" alt="Teacher" src={item.image}/>
-                            <label value={item.data}  className="ygi-search-filters__filter-label">{item.data}</label>
+                            <label value={item.data}  className="ygi-search-filters__filter-label">{item.name}</label>
                         </div>
                     </div>
                 )
