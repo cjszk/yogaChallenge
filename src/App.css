@@ -16511,7 +16511,9 @@ button {
       text-decoration: underline; }
 
 .yi-teacher-dropdown__wrapper-desktop {
-  display: none; }
+  display: none;
+  overflow-y: scroll;
+  max-height: 30vh; }
 
 .yi-teacher-dropdown__wrapper-mobile {
   display: block;
