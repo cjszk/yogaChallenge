@@ -44,13 +44,7 @@ class ClassFinder extends Component {
         }
     }
 
-    componentDidMount() {
-        console.log(sampleData);
-        console.log(this.state)
-    }
-
   render() {
-    console.log(this.state)
     const teachersList = this.state.teachers.map((teacher) => (
         <button 
         onClick={() => {
@@ -177,10 +171,10 @@ class ClassFinder extends Component {
                     <div className="ygi-search__wrapper">
                         <div className="ygi-search-bar col col-12 col-lg-2">
                             <div className="ygi-search-bar__wrapper mt-2">
-                            <input value={this.state.search} onChange={(event) => this.setState({search: event.target.value})} className="ygi-search-bar__input" placeholder="Search" />
-                                {/* <a className="icon-wrapper ygi-search-bar__icon-wrapper">
-                                    (svg)
-                                </a> */}
+                            <input onChange={(event) => {
+                                const value = event.target.value
+                                setTimeout(() => {this.setState({search: value})}, 1000)
+                            }} className="ygi-search-bar__input" placeholder="Search" />
                             </div>
                         </div>
                         <button className="ygi-search__filter-btn mx-auto mb-2 " aria-label="Shows Filters">Show Filters</button>

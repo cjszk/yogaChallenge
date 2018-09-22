@@ -11,35 +11,8 @@ class SearchResults extends Component {
 
 
   render() {
-    console.log(this.props)
     let filterResults = [];
-//     this.props.filters.map((filterItem) => {
-//         this.props.classes.forEach((classItem) => {
-//             if (filterItem.type === 'teacher' && filterItem.data === classItem.teacher[0]) {
-//                 filterResults.push(classItem);
-//             }
-//         })
-// //Prevent the following if blocks from running until the current map function has finished by using another forEach after a map method that returns all values.
-//         return filterItem;
-//     }).forEach((filterItem) => {
-//         this.props.classes.forEach((classItem) => {
-//             if (filterResults.length > 0) {
-//                 // console.log(filterResults.indexOf(classItem.teacher[0]), classItem.teacher[0], filterResults[0])
-//                 console.log
-//                 if (filterResults.indexOf(classItem.teacher[0]) > -1) {
-//                     if (filterItem.type === 'duration' && filterItem.data === classItem.duration[0]) {
-//                         filterResults.push(classItem);                    
-//                     } else if (filterItem.type === 'level' && filterItem.data === classItem.level[0]) {
-//                         filterResults.push(classItem);                    
-//                     } else if (filterItem.type === 'style' && filterItem.data === classItem.style[0]) {
-//                         filterResults.push(classItem);                    
-//                     } else if (filterItem.type === 'bodyPart' && filterItem.data === classItem.anatomical_focus[0]) {
-//                         filterResults.push(classItem);                    
-//                     }
-//                 }
-//             }
-//         })
-    // })
+
     const teachers = this.props.filters.map((item) => item.data);
     const duration = this.props.filters.filter((item) => item.type === 'duration').map((item) => item.data);
     const level = this.props.filters.filter((item) => item.type === 'level').map((item) => item.data);
@@ -86,7 +59,6 @@ class SearchResults extends Component {
     if (filterResults.length > 0) {
         data = filterResults;
     }
-    console.log(filterResults)
     let results;
     const vinyasaResults = data.filter((item) => item.style[0] === 'vinyasa').slice(0 + this.state.sliderIndex, 7 + this.state.sliderIndex).map((item) => (
         <div key={item.entry_id} className="m-2">
@@ -137,7 +109,11 @@ class SearchResults extends Component {
             </div>
             )
     } else if (this.props.search.length > 0) {
-        let searchResults = data.filter((item) => item.title.includes(this.props.search)).map((item) => (
+        let searchResults = data.filter((item) => {
+            let lowerCasedItem = item.title.toLowerCase();
+            return lowerCasedItem.includes(this.props.search.toLowerCase());
+        })
+        .map((item) => (
         <div key={item.entry_id} className="m-2">
             <div className="yi-card-small-centered-hover-wrapper slider">
                 <a className="yi-card-small yi-card-small--hoverable"
@@ -162,7 +138,7 @@ class SearchResults extends Component {
         if (searchResults.length === 0 && data.filter((item) => item.title.includes(this.props.search)).length > 0) {
             this.setState({sliderIndex: 0})
         }
-        const count = data.filter((item) => item.title.includes(this.props.search)).length;
+        const count = searchResults.length;
         if (count === 0) {
             searchResults = (<span>No search results to display</span>)
         }
