@@ -59,7 +59,6 @@ class ClassFinder extends Component {
     }
 
   render() {
-    console.log(this.getDefaultToggleState())
     const teachersList = this.state.teachers.map((teacher) => (
         <button 
         onClick={() => {
