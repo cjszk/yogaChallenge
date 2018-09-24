@@ -135,7 +135,7 @@ class ClassFinder extends Component {
         const durationList = this.buildList(durations, 'duration');
         const levels = this.state.data.map((item) => item.level[0]).filter(onlyUnique).sort();
         const levelList = this.buildList(levels, 'level');
-        const styles = this.state.data.map((item) => item.style[0]).filter(onlyUnique).sort();
+        const styles = this.state.data.map((item) => item.style[0]).filter(onlyUnique).sort().map((item) => item.replace('-', ' ').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' '));
         const styleList = this.buildList(styles, 'style')
         const bodyParts = this.state.data.map((item) => item.anatomical_focus[0]).filter(onlyUnique).sort();
         const bodyPartList = this.buildList(bodyParts, 'anatomical_focus')
