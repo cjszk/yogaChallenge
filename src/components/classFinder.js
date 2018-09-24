@@ -133,7 +133,7 @@ class ClassFinder extends Component {
         }
         const durations = this.state.data.map((item) => item.duration[0]).filter(onlyUnique).sort((a,b) => parseInt(a.replace(/[^0-9]/g, ''), 10) - parseInt(b.replace(/[^0-9]/g, ''), 10)).map((item) => item.replace('-', ' ').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' '));
         const durationList = this.buildList(durations, 'duration');
-        const levels = this.state.data.map((item) => item.level[0]).filter(onlyUnique).sort().map((item) => item.replace('-', ' ').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' '));
+        const levels = this.state.data.map((item) => item.level[0]).filter(onlyUnique).sort().map((item) => item.replace('-', ' ').replace('-', '/').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' '));
         const levelList = this.buildList(levels, 'level');
         const styles = this.state.data.map((item) => item.style[0]).filter(onlyUnique).sort().map((item) => item.replace('-', ' ').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' '));
         const styleList = this.buildList(styles, 'style')
