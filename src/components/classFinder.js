@@ -106,8 +106,6 @@ class ClassFinder extends Component {
     }
 
     render() {
-        console.log(this.state)
-        
         //Data for rendering purposes
         const teachers = sampleData.map((item) => {
             const teacherName = item.teacher[0].replace('-', ' ').replace('-', ' ').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' ');
@@ -201,7 +199,6 @@ class ClassFinder extends Component {
                                     const value = event.target.value;
                                     if (this.timeOut) clearTimeout(this.timeOut);
                                     this.timeOut = setTimeout(() => {
-                                        console.log('test')                                        
                                         this.setState({search: value})
                                     }, 500)
                                 }} className="ygi-search-bar__input" placeholder="Search" />

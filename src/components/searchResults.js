@@ -9,31 +9,45 @@ class SearchResults extends Component {
         }
     }
 
+    createCard = (item) => 
+        <div className="yi-card-small-centered-hover-wrapper slider">
+            <a className="yi-card-small yi-card-small--hoverable"
+            href={item.url}>
+                <div className="yi-card-small__image">
+                    <img src={item.thumb} alt="Card"/>
+                    <div className="yi-card-small__content">
+                        <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-hide">{item.title}</h4>
+                        <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-show">{item.title}</h4>
+                        <div className="yi-card-small__author yi-card-small--hover-hide">{item.teacher[0]}</div>
+                        <div className="yi-card-small__author yi-card-small--hover-show yi-card-small__author--full">{item.teacher[0]}</div>
+                        <div className="">{item.level}</div>
+                        <i className="icon-intensity" style={{fontSize: "11px"}}></i>
+                        <span className="yi-card-small__intensity">{item.intensity}</span>
+                        <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
+                    </div>
+                </div>                
+            </a>
+        </div>
+
+    decrementSlider() {
+        if (this.state.sliderIndex !== 0) {
+            this.setState({sliderIndex: this.state.sliderIndex - 7})
+        }
+    }
+
+    incrementSlider(vinyasaResults) {
+        const vinyasaCount = this.props.classes.filter((item => item.style[0] === 'vinyasa')).length;
+        if (this.state.sliderIndex < vinyasaCount && vinyasaResults.length >= 7) {
+            this.setState({sliderIndex: this.state.sliderIndex + 7})}
+    }
 
   render() {
     
-    let classes = this.props.classes;
+    const classes = this.props.classes;
     let results;
     const vinyasaResults = classes.filter((item) => item.style[0] === 'vinyasa').slice(0 + this.state.sliderIndex, 7 + this.state.sliderIndex).map((item) => (
         <div key={item.entry_id} className="m-2">
-            <div className="yi-card-small-centered-hover-wrapper slider">
-                <a className="yi-card-small yi-card-small--hoverable"
-                 href={item.url}>
-                    <div className="yi-card-small__image">
-                        <img src={item.thumb} alt="Card"/>
-                        <div className="yi-card-small__content">
-                            <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-hide">{item.title}</h4>
-                            <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-show">{item.title}</h4>
-                            <div className="yi-card-small__author yi-card-small--hover-hide">{item.teacher[0]}</div>
-                            <div className="yi-card-small__author yi-card-small--hover-show yi-card-small__author--full">{item.teacher[0]}</div>
-                            <div className="">{item.level}</div>
-                            <i className="icon-intensity" style={{fontSize: "11px"}}></i>
-                            <span className="yi-card-small__intensity">{item.intensity}</span>
-                            <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
-                        </div>
-                    </div>                
-                </a>
-            </div>
+            {this.createCard(item)}
         </div>
     ));
     if (this.props.search.length === 0 && this.props.filters.length === 0) {
@@ -45,19 +59,15 @@ class SearchResults extends Component {
                             <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg"
                             style={{transform: "rotate(180deg)", width: "25px", cursor: "pointer"}}
                             onClick={() => {
-                                if (this.state.sliderIndex !== 0) {
-                                    this.setState({sliderIndex: this.state.sliderIndex - 7})
-                                }
+                                this.decrementSlider();
                             }}
                             />
                         {vinyasaResults}
                             <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg"
                             style={{width: "25px",  cursor: "pointer"}}
                             onClick={() => {
-                            const vinyasaCount = classes.filter((item => item.style[0] === 'vinyasa')).length;
-                            if (this.state.sliderIndex < vinyasaCount && vinyasaResults.length >= 7) {
-                                this.setState({sliderIndex: this.state.sliderIndex + 7})
-                        }}}/>
+                                this.incrementSlider(vinyasaResults)
+                            }}/>
                     </div>
                 </div>
             </div>
@@ -70,24 +80,7 @@ class SearchResults extends Component {
 
         let renderResults = searchResults.map((item) => (
         <div key={item.entry_id} className="m-2">
-            <div className="yi-card-small-centered-hover-wrapper slider">
-                <a className="yi-card-small yi-card-small--hoverable"
-                 href={item.url}>
-                    <div className="yi-card-small__image">
-                        <img src={item.thumb} alt="Card"/>
-                        <div className="yi-card-small__content">
-                            <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-hide">{item.title}</h4>
-                            <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-show">{item.title}</h4>
-                            <div className="yi-card-small__author yi-card-small--hover-hide">{item.teacher[0]}</div>
-                            <div className="yi-card-small__author yi-card-small--hover-show yi-card-small__author--full">{item.teacher[0]}</div>
-                            <div className="">{item.level}</div>
-                            <i className="icon-intensity" style={{fontSize: "11px"}}></i>
-                            <span className="yi-card-small__intensity">{item.intensity}</span>
-                            <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            {this.createCard(item)}
         </div>
         ));
         
@@ -115,24 +108,7 @@ class SearchResults extends Component {
     } else {
         let searchResults = classes.filter((item) => item.title.includes(this.props.search)).map((item) => (
             <div key={item.entry_id} className="m-2">
-                <div className="yi-card-small-centered-hover-wrapper slider">
-                    <a className="yi-card-small yi-card-small--hoverable"
-                     href={item.url}>
-                        <div className="yi-card-small__image">
-                            <img src={item.thumb} alt="Card"/>
-                            <div className="yi-card-small__content">
-                                <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-hide">{item.title}</h4>
-                                <h4 className="yi-card-small__title yi-card-small__title--two-line yi-card-small--hover-show">{item.title}</h4>
-                                <div className="yi-card-small__author yi-card-small--hover-hide">{item.teacher[0]}</div>
-                                <div className="yi-card-small__author yi-card-small--hover-show yi-card-small__author--full">{item.teacher[0]}</div>
-                                <div className="">{item.level}</div>
-                                <i className="icon-intensity" style={{fontSize: "11px"}}></i>
-                                <span className="yi-card-small__intensity">{item.intensity}</span>
-                                <p className="yi-card-small__snippet mt-1">{item.body_snippet}</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+                {this.createCard(item)}
             </div>
             ));
         const count = classes.length;
