@@ -12,12 +12,12 @@ class SearchResults extends Component {
 
   render() {
     let filterResults = [];
-
+    console.log(this.props)
     const teachers = this.props.filters.map((item) => item.data);
     const duration = this.props.filters.filter((item) => item.type === 'duration').map((item) => item.data);
     const level = this.props.filters.filter((item) => item.type === 'level').map((item) => item.data);
     const style = this.props.filters.filter((item) => item.type === 'style').map((item) => item.data);
-    const bodyPart = this.props.filters.filter((item) => item.type === 'bodyPart').map((item) => item.data);
+    const bodyPart = this.props.filters.filter((item) => item.type === 'anatomical_focus').map((item) => item.data);
     filterResults = this.props.classes.filter((classItem) => {
         if (teachers.includes(classItem.teacher[0])) {
             return classItem;
@@ -88,22 +88,29 @@ class SearchResults extends Component {
                 <h4 className="slider-header">Vinyasa</h4>
                 <div className="slider">
                     <div className="slider-results">
-                        <button onClick={() => {
-                            if (this.state.sliderIndex !== 0) {
-                                this.setState({sliderIndex: this.state.sliderIndex - 7})
-                            }
-                        }} className="slider-button slider-button-left">
-                            &#60;
-                        </button>
+                        {/* <button  className="slider-button slider-button-left"> */}
+                            <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg"
+                            style={{transform: "rotate(180deg)", width: "25px", cursor: "pointer"}}
+                            onClick={() => {
+                                if (this.state.sliderIndex !== 0) {
+                                    this.setState({sliderIndex: this.state.sliderIndex - 7})
+                                }
+                            }}
+                            />
+                            {/* &#60; */}
+                        {/* </button> */}
                         {vinyasaResults}
-                        <button onClick={() => {
+                        {/* <button 
+                        className="slider-button slider-button-right"> */}
+                            <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg"
+                            style={{width: "25px",  cursor: "pointer"}}
+                            onClick={() => {
                             const vinyasaCount = data.filter((item => item.style[0] === 'vinyasa')).length;
                             if (this.state.sliderIndex < vinyasaCount && vinyasaResults.length >= 7) {
                                 this.setState({sliderIndex: this.state.sliderIndex + 7})
-                        }}}
-                        className="slider-button slider-button-right">
-                            &#62;
-                        </button>
+                        }}}/>
+                            {/* &#62; */}
+                        {/* </button> */}
                     </div>
                 </div>
             </div>
@@ -135,6 +142,7 @@ class SearchResults extends Component {
             </div>
         </div>
         ));
+        
         if (searchResults.length === 0 && data.filter((item) => item.title.includes(this.props.search)).length > 0) {
             this.setState({sliderIndex: 0})
         }
