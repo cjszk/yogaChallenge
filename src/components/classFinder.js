@@ -68,6 +68,20 @@ class ClassFinder extends Component {
         this.setState(newToggleState)
     }
 
+    buildList = (dataSet, type) => dataSet.map((data) => (
+        <button 
+        onClick={() => {
+            this.addFilter(data, type);
+        }} 
+        key={data} className="dropdown-item ygi-dropdown__option">
+            <span>{data}</span>
+        </button>
+    ));
+
+    search(value) {
+        setTimeout(() => {this.setState({search: value})}, 1000)
+    }
+
     render() {
         // console.log(this.state)
         //Data for rendering purposes
@@ -95,6 +109,7 @@ class ClassFinder extends Component {
         const bodyParts = this.state.data.map((item) => item.anatomical_focus[0]).filter(onlyUnique).sort();
 
         //JSX Lists
+
         const teachersList = teachers.map((teacher) => {
             return (
                     <button 
@@ -107,46 +122,10 @@ class ClassFinder extends Component {
                     </button>
                 );
         })
-
-        const durationList = durations.map((duration) => (
-            <button 
-            onClick={() => {
-                this.addFilter(duration, 'duration');
-            }} 
-            key={duration} className="dropdown-item ygi-dropdown__option">
-                <span>{duration}</span>
-            </button>
-        ));
-
-        const levelList = levels.map((level) => (
-            <button
-            onClick={() => {
-                this.addFilter(level, 'level');
-            }} 
-            key={level} className="dropdown-item ygi-dropdown__option">
-                <span>{level}</span>
-            </button>
-        ));
-
-        const styleList = styles.map((style) => (
-            <button
-            onClick={() => {
-                this.addFilter(style, 'style');
-            }} 
-            key={style} className="dropdown-item ygi-dropdown__option">
-                <span>{style}</span>
-            </button>
-        ));
-
-        const bodyPartList = bodyParts.map((bodyPart) => (
-            <button
-            onClick={() => {
-                this.addFilter(bodyPart, 'anatomical_focus');
-            }} 
-            key={bodyPart} className="dropdown-item ygi-dropdown__option">
-                <span>{bodyPart}</span>
-            </button>
-        ));
+        const durationList = this.buildList(durations, 'duration');
+        const levelList = this.buildList(levels, 'level');
+        const styleList = this.buildList(styles, 'style')
+        const bodyPartList = this.buildList(bodyParts, 'anatomical_focus')
 
         let filterList = [];
         if (this.state.filters.length > 0) {
@@ -191,8 +170,7 @@ class ClassFinder extends Component {
                             <div className="ygi-search-bar col col-12 col-lg-2">
                                 <div className="ygi-search-bar__wrapper mt-2">
                                 <input onChange={(event) => {
-                                    const value = event.target.value
-                                    setTimeout(() => {this.setState({search: value})}, 1000)
+                                    this.search(event.target.value)
                                 }} className="ygi-search-bar__input" placeholder="Search" />
                                 </div>
                             </div>

@@ -153,8 +153,12 @@ class SearchResults extends Component {
         results = (
             <div>
                 <h4 className="slider-header">{count} results</h4>
-                <div className="slider">
-                    <div className="slider-results">
+                <div className="">
+                    <div className="" style={{
+                        padding: '50px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        flexWrap: 'wrap'}}>
                         {searchResults}
                     </div>
                 </div>
@@ -190,8 +194,12 @@ class SearchResults extends Component {
         results = (
             <div>
                 <h4 className="slider-header">{count} results</h4>
-                <div className="slider">
-                    <div className="slider-results">
+                <div className="">
+                    <div className="" style={{
+                        padding: '50px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        flexWrap: 'wrap'}}>
                         {searchResults}
                     </div>
                 </div>
