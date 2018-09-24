@@ -101,10 +101,6 @@ class ClassFinder extends Component {
             </div>
         </div>
 
-    initiateTypingTimer() {
-        this.setState({typingTimeout: 3})
-    }
-
     render() {
         //Data for rendering purposes
         const teachers = sampleData.map((item) => {
