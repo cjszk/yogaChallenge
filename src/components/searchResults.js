@@ -11,56 +11,10 @@ class SearchResults extends Component {
 
 
   render() {
-    let filterResults = [];
-    console.log(this.props)
-    const teachers = this.props.filters.map((item) => item.data);
-    const duration = this.props.filters.filter((item) => item.type === 'duration').map((item) => item.data);
-    const level = this.props.filters.filter((item) => item.type === 'level').map((item) => item.data);
-    const style = this.props.filters.filter((item) => item.type === 'style').map((item) => item.data);
-    const bodyPart = this.props.filters.filter((item) => item.type === 'anatomical_focus').map((item) => item.data);
-    filterResults = this.props.classes.filter((classItem) => {
-        if (teachers.includes(classItem.teacher[0])) {
-            return classItem;
-        }
-    })
-    if (filterResults.length === 0) {
-        filterResults = this.props.classes;
-    }
-    if (duration.length > 0) {
-        filterResults = filterResults.filter((classItem) => {
-            if (duration.includes(classItem.duration[0])) {
-                return classItem;
-            }
-        })
-    }
-    if (level.length > 0) {
-        filterResults = filterResults.filter((classItem) => {
-            if (level.includes(classItem.level[0])) {
-                return classItem;
-            }
-        })
-    }
-    if (style.length > 0) {
-        filterResults = filterResults.filter((classItem) => {
-            if (style.includes(classItem.style[0])) {
-                return classItem;
-            }
-        })
-    }
-    if (bodyPart.length > 0) {
-        filterResults = filterResults.filter((classItem) => {
-            if (bodyPart.includes(classItem.anatomical_focus[0])) {
-                return classItem;
-            }
-        })
-    }
     
-    let data = this.props.classes;
-    if (filterResults.length > 0) {
-        data = filterResults;
-    }
+    let classes = this.props.classes;
     let results;
-    const vinyasaResults = data.filter((item) => item.style[0] === 'vinyasa').slice(0 + this.state.sliderIndex, 7 + this.state.sliderIndex).map((item) => (
+    const vinyasaResults = classes.filter((item) => item.style[0] === 'vinyasa').slice(0 + this.state.sliderIndex, 7 + this.state.sliderIndex).map((item) => (
         <div key={item.entry_id} className="m-2">
             <div className="yi-card-small-centered-hover-wrapper slider">
                 <a className="yi-card-small yi-card-small--hoverable"
@@ -88,7 +42,6 @@ class SearchResults extends Component {
                 <h4 className="slider-header">Vinyasa</h4>
                 <div className="slider">
                     <div className="slider-results">
-                        {/* <button  className="slider-button slider-button-left"> */}
                             <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg"
                             style={{transform: "rotate(180deg)", width: "25px", cursor: "pointer"}}
                             onClick={() => {
@@ -97,30 +50,25 @@ class SearchResults extends Component {
                                 }
                             }}
                             />
-                            {/* &#60; */}
-                        {/* </button> */}
                         {vinyasaResults}
-                        {/* <button 
-                        className="slider-button slider-button-right"> */}
                             <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg"
                             style={{width: "25px",  cursor: "pointer"}}
                             onClick={() => {
-                            const vinyasaCount = data.filter((item => item.style[0] === 'vinyasa')).length;
+                            const vinyasaCount = classes.filter((item => item.style[0] === 'vinyasa')).length;
                             if (this.state.sliderIndex < vinyasaCount && vinyasaResults.length >= 7) {
                                 this.setState({sliderIndex: this.state.sliderIndex + 7})
                         }}}/>
-                            {/* &#62; */}
-                        {/* </button> */}
                     </div>
                 </div>
             </div>
             )
     } else if (this.props.search.length > 0) {
-        let searchResults = data.filter((item) => {
+        let searchResults = classes.filter((item) => {
             let lowerCasedItem = item.title.toLowerCase();
             return lowerCasedItem.includes(this.props.search.toLowerCase());
         })
-        .map((item) => (
+
+        let renderResults = searchResults.map((item) => (
         <div key={item.entry_id} className="m-2">
             <div className="yi-card-small-centered-hover-wrapper slider">
                 <a className="yi-card-small yi-card-small--hoverable"
@@ -143,7 +91,7 @@ class SearchResults extends Component {
         </div>
         ));
         
-        if (searchResults.length === 0 && data.filter((item) => item.title.includes(this.props.search)).length > 0) {
+        if (searchResults.length === 0 && classes.filter((item) => item.title.includes(this.props.search)).length > 0) {
             this.setState({sliderIndex: 0})
         }
         const count = searchResults.length;
@@ -159,13 +107,13 @@ class SearchResults extends Component {
                         display: 'flex',
                         justifyContent: 'center',
                         flexWrap: 'wrap'}}>
-                        {searchResults}
+                        {renderResults}
                     </div>
                 </div>
             </div>
         )
     } else {
-        let searchResults = data.filter((item) => item.title.includes(this.props.search)).map((item) => (
+        let searchResults = classes.filter((item) => item.title.includes(this.props.search)).map((item) => (
             <div key={item.entry_id} className="m-2">
                 <div className="yi-card-small-centered-hover-wrapper slider">
                     <a className="yi-card-small yi-card-small--hoverable"
@@ -187,7 +135,7 @@ class SearchResults extends Component {
                 </div>
             </div>
             ));
-        const count = filterResults.length;
+        const count = classes.length;
         if (count === 0) {
             searchResults = (<span>No search results to display</span>)
         }

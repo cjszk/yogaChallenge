@@ -6,40 +6,43 @@ class ClassFinder extends Component {
     constructor(props) {
         super(props);
 
+        this.timeOut = 0;        
+
         this.state = {
             search: '',
             data: sampleData,
-            teachers: [],
-            durations: [],
-            levels: [],
-            styles: [],
-            bodyParts: [],
-            selectedDropDown: '',
             toggleTeachers: 'dropdown-menu ygi-dropdown__menu',
             toggleDurations: 'dropdown-menu ygi-dropdown__menu',
             toggleLevels: 'dropdown-menu ygi-dropdown__menu',
             toggleStyles: 'dropdown-menu ygi-dropdown__menu',
             toggleBodyParts: 'dropdown-menu ygi-dropdown__menu',
             filters: [],
-            filtered: false
+            filtered: 0,
         }
     }
-
+    
     componentDidUpdate() {
-
-        if (this.state.filters.length > 0) {
-            let newData = this.state.data;
-            this.state.filters.forEach((filter) => {
-                newData = newData.filter((item) => {
-                    return item[filter.type].includes(filter.data)
-                });
-            })
-            if (this.state.filtered === false) {
-                this.setState({filtered: true, data: newData});
+        if (this.state.filtered < this.state.filters.length) {
+            const teacherFilters = this.state.filters.filter((filter) => filter.type === 'teacher');
+            const nonTeacherFilters = this.state.filters.filter((filter) => filter.type !== 'teacher');
+            let i = 0;
+            let filteredData = [];
+            while (i < teacherFilters.length) {
+                sampleData.forEach((item) => {
+                    if (item[teacherFilters[i].type].includes(teacherFilters[i].data)) filteredData.push(item);
+                })
+                i++;
             }
-        } else {
-            if (this.state.filtered === true) {
-                this.setState({filtered: false, data: sampleData});
+            if (this.state.filtered < this.state.filters.length && i === this.state.filters.length) this.setState({filtered: this.state.filtered + 1, data: filteredData})
+            while (i >= teacherFilters.length && i < this.state.filters.length) {
+                if (filteredData.length === 0) filteredData = this.state.data;
+                nonTeacherFilters.forEach((filter) => {
+                    filteredData = filteredData.filter((item) => {
+                        return item[filter.type].includes(filter.data)
+                    });
+                    if (this.state.filtered < this.state.filters.length) this.setState({filtered: this.state.filtered + 1, data: filteredData});
+                })
+                i++;
             }
         }
     }
@@ -58,13 +61,9 @@ class ClassFinder extends Component {
         let newToggleState = this.getDefaultToggleState();
         let found = false;
         this.state.filters.forEach((item) => {
-            if (item.data === data) {
-                found = true;
-            }
+            if (item.data === data) found = true;
         });
-        if (!found) {
-            newToggleState.filters = this.state.filters.concat([{name, data, type, image}])
-        }
+        if (!found) newToggleState.filters = this.state.filters.concat([{name, data, type, image}])
         this.setState(newToggleState)
     }
 
@@ -78,19 +77,42 @@ class ClassFinder extends Component {
         </button>
     ));
 
-    search(value) {
-        setTimeout(() => {this.setState({search: value})}, 1000)
+    createFilterOption = (toggle, list, type, label) => 
+        <div className="col-lg col-md-6 col-xs-12 mt-2">
+            <div className="ygi-dropdown__wrapper yi-teacher-dropdown nopadding d-block yi-dropdown--beneath-modal">
+                <button
+                onClick={() => {
+                    if (toggle === 'dropdown-menu ygi-dropdown__menu'){
+                        let newToggleState = this.getDefaultToggleState();
+                        newToggleState[type] = 'dropdown-menu ygi-dropdown__menu show'
+                        this.setState(newToggleState);
+                    } else {
+                        this.setState(this.getDefaultToggleState());
+                    }
+                }} 
+                className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-teacher" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">{label}
+                <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg" style={{transform: "rotate(90deg)", marginLeft: "10px"}}/>
+                </button>
+                <div className={toggle} aria-labelledby="dropdown-teacher">
+                    <div className="yi-teacher-dropdown__wrapper-desktop" style={{display: "block"}}>
+                        {list}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    initiateTypingTimer() {
+        this.setState({typingTimeout: 3})
     }
 
     render() {
-        // console.log(this.state)
+        console.log(this.state)
+        
         //Data for rendering purposes
         const teachers = sampleData.map((item) => {
             const teacherName = item.teacher[0].replace('-', ' ').replace('-', ' ').split(' ').map((item) => item[0].toUpperCase() + item.slice(1, item.length)).join(' ');
             let teacherImage = item.teacher_image;
-            if (teacherImage.length === 0) {
-                teacherImage = "https://yogainternational.com/assets/fonts/icons/icon-profile-placeholder.svg";
-            }
+            if (teacherImage.length === 0) teacherImage = "https://yogainternational.com/assets/fonts/icons/icon-profile-placeholder.svg";
             return {
                 name: teacherName, data: item.teacher[0], image: teacherImage, type: 'teacher', 
             }
@@ -99,16 +121,6 @@ class ClassFinder extends Component {
             t.data === teacher.data
             ))
         ).sort((a,b) => a.name.charCodeAt(0) - b.name.charCodeAt(0));
-
-        function onlyUnique(value, index, self) { 
-            return self.indexOf(value) === index && value !== undefined;
-        }
-        const durations = this.state.data.map((item) => item.duration[0]).filter(onlyUnique).sort((a,b) => parseInt(a.replace(/[^0-9]/g, ''), 10) - parseInt(b.replace(/[^0-9]/g, ''), 10));
-        const levels = this.state.data.map((item) => item.level[0]).filter(onlyUnique).sort();
-        const styles = this.state.data.map((item) => item.style[0]).filter(onlyUnique).sort();
-        const bodyParts = this.state.data.map((item) => item.anatomical_focus[0]).filter(onlyUnique).sort();
-
-        //JSX Lists
 
         const teachersList = teachers.map((teacher) => {
             return (
@@ -122,44 +134,60 @@ class ClassFinder extends Component {
                     </button>
                 );
         })
+        function onlyUnique(value, index, self) { 
+            return self.indexOf(value) === index && value !== undefined;
+        }
+        const durations = this.state.data.map((item) => item.duration[0]).filter(onlyUnique).sort((a,b) => parseInt(a.replace(/[^0-9]/g, ''), 10) - parseInt(b.replace(/[^0-9]/g, ''), 10));
         const durationList = this.buildList(durations, 'duration');
+        const levels = this.state.data.map((item) => item.level[0]).filter(onlyUnique).sort();
         const levelList = this.buildList(levels, 'level');
+        const styles = this.state.data.map((item) => item.style[0]).filter(onlyUnique).sort();
         const styleList = this.buildList(styles, 'style')
+        const bodyParts = this.state.data.map((item) => item.anatomical_focus[0]).filter(onlyUnique).sort();
         const bodyPartList = this.buildList(bodyParts, 'anatomical_focus')
 
         let filterList = [];
+
         if (this.state.filters.length > 0) {
             this.state.filters.forEach((item) => {
+                let filterTag = <label value={item.data}  className="ygi-search-filters__filter-label">{item.data}</label>;
+
                 if (item.type === 'teacher') {
-                    filterList.push(
-                        <div value={item.data} key={item.data} onClick={() => {
-                            this.setState({
-                                filters: this.state.filters.filter((filterItem) => filterItem.data !== item.data)
-                            })
-                            }} className="mt-2">
-                            <div value={item.data} role="button" className="ygi-search-filters__filter">
-                                <img value={item.data}  className="ygi-search-filters__filter-teacher-image" alt="Teacher" src={item.image}/>
-                                <label value={item.data}  className="ygi-search-filters__filter-label">{item.name}</label>
-                            </div>
-                        </div>
-                    )
-                } else {
-                    filterList.push(
-                        <div value={item.data} key={item.data} onClick={() => {
-                            this.setState({
-                                filters: this.state.filters.filter((filterItem) => filterItem.data !== item.data)
-                            })
-                            }} className="mt-2">
-                            <div value={item.data} role="button" className="ygi-search-filters__filter">
-                                <label value={item.data}  className="ygi-search-filters__filter-label">{item.data}</label>
-                            </div>
-                        </div>
-                    )
+                    filterTag =
+                    <span>
+                        <img value={item.data}  className="ygi-search-filters__filter-teacher-image" alt="Teacher" src={item.image}/>
+                        <label value={item.data}  className="ygi-search-filters__filter-label">{item.data}</label>
+                    </span>
                 }
 
-
+                filterList.push(
+                    <div value={item.data} key={item.data} onClick={() => {
+                        this.setState({
+                            filters: this.state.filters.filter((filterItem) => filterItem.data !== item.data), filtered: 0, data: sampleData
+                        })
+                        }} className="mt-2">
+                        <div value={item.data} role="button" className="ygi-search-filters__filter">
+                            {filterTag}
+                        </div>
+                    </div>
+                )
             })
         }
+
+        const teacherFilters = this.createFilterOption(this.state.toggleTeachers, teachersList, 'toggleTeachers', 'Teacher');
+        const durationsFilters = this.createFilterOption(this.state.toggleDurations, durationList, 'toggleDurations', 'Duration');
+        const levelFilters = this.createFilterOption(this.state.toggleLevels, levelList, 'toggleLevels', 'Level');
+        const styleFilters = this.createFilterOption(this.state.toggleStyles, styleList, 'toggleStyles', 'Style');
+        const bodyPartFilters = this.createFilterOption(this.state.toggleBodyParts, bodyPartList, 'toggleBodyParts', 'Body Part');
+
+        const filterOptions = 
+            <div className="row">
+                {teacherFilters}
+                {durationsFilters}
+                {levelFilters}
+                {styleFilters}
+                {bodyPartFilters}
+            </div>
 
         return (
             <div className="default-page-wrapper">
@@ -170,128 +198,21 @@ class ClassFinder extends Component {
                             <div className="ygi-search-bar col col-12 col-lg-2">
                                 <div className="ygi-search-bar__wrapper mt-2">
                                 <input onChange={(event) => {
-                                    this.search(event.target.value)
+                                    const value = event.target.value;
+                                    if (this.timeOut) clearTimeout(this.timeOut);
+                                    this.timeOut = setTimeout(() => {
+                                        console.log('test')                                        
+                                        this.setState({search: value})
+                                    }, 500)
                                 }} className="ygi-search-bar__input" placeholder="Search" />
                                 </div>
                             </div>
                             <button className="ygi-search__filter-btn mx-auto mb-2 " aria-label="Shows Filters">Show Filters</button>
                             <div className="yi-dropdowns__wrapper-visibility col-lg-10">
-                                <div className="row">
-                                    <div className="col-lg col-md-6 col-xs-12 mt-2">
-                                        <div className="ygi-dropdown__wrapper yi-teacher-dropdown nopadding d-block yi-dropdown--beneath-modal">
-                                            <button
-                                            onClick={() => {
-                                                if (this.state.toggleTeachers === 'dropdown-menu ygi-dropdown__menu'){
-                                                    let newToggleState = this.getDefaultToggleState();
-                                                    newToggleState.toggleTeachers = 'dropdown-menu ygi-dropdown__menu show'
-                                                    this.setState(newToggleState);
-                                                } else {
-                                                    this.setState(this.getDefaultToggleState());
-                                                }
-                                            }} 
-                                            className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-teacher" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Teacher
-                                            <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg" style={{transform: "rotate(90deg)", marginLeft: "10px"}}/>
-                                            </button>
-                                            <div className={this.state.toggleTeachers} aria-labelledby="dropdown-teacher">
-                                                <div className="yi-teacher-dropdown__wrapper-desktop" style={{display: "block"}}>
-                                                    {teachersList}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg col-md-6 col-xs-12 mt-2">
-                                        <div className="ygi-dropdown__wrapper yi-duration-dropdown nopadding d-block yi-dropdown--beneath-modal">
-                                            <button
-                                            onClick={() => {
-                                                if (this.state.toggleDurations === 'dropdown-menu ygi-dropdown__menu'){
-                                                    let newToggleState = this.getDefaultToggleState();
-                                                    newToggleState.toggleDurations = 'dropdown-menu ygi-dropdown__menu show'
-                                                    this.setState(newToggleState);
-                                                } else {
-                                                    this.setState(this.getDefaultToggleState());
-                                                }
-                                            }} 
-                                            className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-duration" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Duration
-                                            <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg" style={{transform: "rotate(90deg)", marginLeft: "10px"}}/>
-                                            </button>
-                                            <div className={this.state.toggleDurations} aria-labelledby="dropdown-duration">
-                                                <div className="yi-duration-dropdown__wrapper-desktop" style={{display: "block"}}>
-                                                    {durationList}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg col-md-6 col-xs-12 mt-2">
-                                        <div className="ygi-dropdown__wrapper yi-level-dropdown nopadding d-block yi-dropdown--beneath-modal">
-                                            <button
-                                            onClick={() => {
-                                                if (this.state.toggleLevels === 'dropdown-menu ygi-dropdown__menu'){
-                                                    let newToggleState = this.getDefaultToggleState();
-                                                    newToggleState.toggleLevels = 'dropdown-menu ygi-dropdown__menu show'
-                                                    this.setState(newToggleState);
-                                                } else {
-                                                    this.setState(this.getDefaultToggleState());
-                                                }
-                                            }} 
-                                            className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-level" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Level
-                                            <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg" style={{transform: "rotate(90deg)", marginLeft: "10px"}}/>
-                                            </button>
-                                            <div className={this.state.toggleLevels} aria-labelledby="dropdown-level">
-                                                <div className="yi-level-dropdown__wrapper-desktop" style={{display: "block"}}>
-                                                    {levelList}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg col-md-6 col-xs-12 mt-2">
-                                        <div className="ygi-dropdown__wrapper yi-style-dropdown nopadding d-block yi-dropdown--beneath-modal">
-                                            <button
-                                            onClick={() => {
-                                                if (this.state.toggleStyles === 'dropdown-menu ygi-dropdown__menu'){
-                                                    let newToggleState = this.getDefaultToggleState();
-                                                    newToggleState.toggleStyles = 'dropdown-menu ygi-dropdown__menu show'
-                                                    this.setState(newToggleState);
-                                                } else {
-                                                    this.setState(this.getDefaultToggleState());
-                                                }
-                                            }} 
-                                            className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-style" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Style
-                                            <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg" style={{transform: "rotate(90deg)", marginLeft: "10px"}}/>
-                                            </button>
-                                            <div className={this.state.toggleStyles} aria-labelledby="dropdown-style">
-                                                <div className="yi-style-dropdown__wrapper-desktop" style={{display: "block"}}>
-                                                    {styleList}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg col-md-6 col-xs-12 mt-2">
-                                        <div className="ygi-dropdown__wrapper yi-anatomical_focus-dropdown nopadding d-block yi-dropdown--beneath-modal">
-                                            <button
-                                            onClick={() => {
-                                                if (this.state.toggleBodyParts === 'dropdown-menu ygi-dropdown__menu'){
-                                                    let newToggleState = this.getDefaultToggleState();
-                                                    newToggleState.toggleBodyParts = 'dropdown-menu ygi-dropdown__menu show'
-                                                    this.setState(newToggleState);
-                                                } else {
-                                                    this.setState(this.getDefaultToggleState());
-                                                }
-                                            }} 
-                                            className="btn dropdown-toggle ygi-dropdown__placeholder" id="dropdown-anatomical_focus" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="true">Body Part
-                                            <img src="https://yogainternational.com/assets/fonts/icons/icon-right-arrow.svg" style={{transform: "rotate(90deg)", marginLeft: "10px"}}/>
-                                            </button>
-                                            <div className={this.state.toggleBodyParts} aria-labelledby="dropdown-anatomical_focus">
-                                                <div className="yi-anatomical_focus-dropdown__wrapper-desktop" style={{display: "block"}}>
-                                                    {bodyPartList}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {filterOptions}
                             </div>
                         </div>
                     </div>
-
                     <div className="ygi-search-filters">
                         <div className="container px-3">
                             <div className="ygi-search-filters__wrapper">
@@ -305,7 +226,7 @@ class ClassFinder extends Component {
                         </div>
                     </div>
                     <div className="ygi-profile-classes">
-                        <SearchResults search={this.state.search} classes={sampleData} filters={this.state.filters}/>
+                        <SearchResults search={this.state.search} classes={this.state.data} filters={this.state.filters}/>
                     </div>
                 </section>
             </div>
